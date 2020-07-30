@@ -108,7 +108,7 @@ public class NetworkClient {
      * @param reqUrl
      * @return
      */
-    private String getRequestUrl(String reqUrl, String posid) {
+    private static String getRequestUrl(String reqUrl, String posid) {
         if (TextUtils.isEmpty(reqUrl)) {
             return "";
         }
@@ -124,7 +124,7 @@ public class NetworkClient {
         StringBuilder sb = new StringBuilder(reqUrl);
         sb.append("?sdkv=").append(BuildConfig.VERSION_NAME);
         //tag = 3 代表sdk请求
-        sb.append("?tag=").append(3);
+        sb.append("&tag=").append(3);
         sb.append("&posid=").append(posid);
         //gaid google广告id
         sb.append("&ifa=").append(OverseasAdSession.get().getGaid());
@@ -140,7 +140,7 @@ public class NetworkClient {
         sb.append("&devicetype=").append(devicetype);
         sb.append("&nt=").append(NetUtil.getConnectionType(context));
         sb.append("&os=").append(MobiConstantValue.PLATFORM);
-        sb.append("&osv=").append(MobiConstantValue.PLATFORM);
+        sb.append("&osv=").append(DeviceUtil.getSystemVersion());
         String[] location = DeviceUtil.getLocation(context);
         sb.append("&lat=").append(location[1]);
         sb.append("&lon=").append(location[0]);
@@ -158,5 +158,27 @@ public class NetworkClient {
         void onSuccess(T data);
 
         void onFailure(int code, String message);
+    }
+
+
+    public static void reportAd(final String url) {
+        OverseasAdSession.get().getDispatcher().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Request request = new Request.Builder()
+                            .setMethod(Request.GET)
+                            .setUrl(url)
+                            .build();
+                    HttpClient httpClient = new HttpClient();
+                    //请求
+                    httpClient.execute(request);
+                } catch (Exception e) {
+
+                } finally {
+                    OverseasAdSession.get().getDispatcher().finishRunnable(this);
+                }
+            }
+        });
     }
 }

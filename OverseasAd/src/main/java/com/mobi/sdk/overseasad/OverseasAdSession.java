@@ -79,7 +79,7 @@ public class OverseasAdSession implements OAIdSdk.ResultCallback, WeakHandler.IH
 
     public String getOaid() {
         if (TextUtils.isEmpty(gaid)) {
-            gaid = "";
+            oaid = "";
         }
         return oaid;
     }

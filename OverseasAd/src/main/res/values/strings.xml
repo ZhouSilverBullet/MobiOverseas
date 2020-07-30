@@ -1,0 +1,12 @@
+<resources>
+    <string name="continue_open">Continue</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- SSL Error-->
+    <string name="ssl_error">SSL certificate error.</string>
+    <string name="ssl_error_not_trust">SSL certificate authorities are not trusted.</string>
+    <string name="ssl_error_expired">The SSL certificate has expired.</string>
+    <string name="ssl_error_mismatch">The SSL security certificate domain name is not consistent with the website url.</string>
+    <string name="ssl_error_not_valid">The SSL certificate is not yet valid.</string>
+    <string name="ssl_error_continue_open">Do you want to continue opening this page?</string>
+</resources>

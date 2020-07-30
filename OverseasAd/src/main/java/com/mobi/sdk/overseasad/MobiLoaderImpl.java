@@ -37,6 +37,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
                     for (AdBean datum : data) {
                         if (datum.getStyle() == 2) {
                             mMobiBannerAd.setAdData(datum);
+                            break;
                         }
                     }
 

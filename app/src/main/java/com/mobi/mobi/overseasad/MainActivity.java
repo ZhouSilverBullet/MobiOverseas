@@ -3,6 +3,7 @@ package com.mobi.mobi.overseasad;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -15,6 +16,8 @@ import com.mobi.sdk.overseasad.listener.MobiCallback;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "MainActivity";
+
     private FrameLayout mFrameLayout;
 
     @Override
@@ -26,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         mFrameLayout = findViewById(R.id.flLayout);
 
         MobiAdLoader adLoader = MobiSdk.createBanner(this);
-        MobiAdRequest request = new MobiAdRequest.Builder().setPosid("11111").build();
+        MobiAdRequest request = new MobiAdRequest.Builder().setPosid("168001").build();
         adLoader.loadBannerAd(request, new MobiCallback.BannerAdLoadCallback() {
             @Override
             public void onBannerAdLoad(MobiBannerAd bannerAd) {
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(int code, String message) {
-
+                Log.e(TAG, "code : " + code + ", message: " + message);
             }
         });
     }

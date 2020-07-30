@@ -6,6 +6,7 @@ import android.view.View;
 import com.mobi.sdk.overseasad.bean.AdBean;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
+import com.mobi.sdk.overseasad.network.NetworkClient;
 
 /**
  * @author zhousaito
@@ -59,4 +60,25 @@ public class MobiBannerAdImpl implements MobiBannerAd {
     }
 
 
+    /**
+     * 点击上报
+     */
+    public void reportClick() {
+        if (mAdData != null) {
+            for (String s : mAdData.getClkTrack()) {
+                NetworkClient.reportAd(s);
+            }
+        }
+    }
+
+    /**
+     * 展示上报
+     */
+    public void reportShow() {
+        if (mAdData != null) {
+            for (String s : mAdData.getImgTrack()) {
+                NetworkClient.reportAd(s);
+            }
+        }
+    }
 }
