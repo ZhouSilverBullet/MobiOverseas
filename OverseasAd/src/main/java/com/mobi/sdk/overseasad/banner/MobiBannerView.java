@@ -1,15 +1,24 @@
 package com.mobi.sdk.overseasad.banner;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mobi.sdk.overseasad.bean.AdBean;
+import com.mobi.sdk.overseasad.listener.MobiBannerAd;
+import com.mobi.sdk.overseasad.listener.MobiCallback;
+import com.mobi.sdk.overseasad.utils.Base64Utils;
 import com.mobi.sdk.overseasad.utils.ResourceUtil;
+
+import java.util.List;
 
 /**
  * @author zhousaito
@@ -18,6 +27,7 @@ import com.mobi.sdk.overseasad.utils.ResourceUtil;
  * @Dec 略
  */
 public class MobiBannerView extends FrameLayout {
+    public static final String TAG = "MobiBannerView";
 
     public static final String webData = "<div>\n" +
             "    <div class=\"container\" style=\"width:100%; height:100%;overflow:hidden;\">你好\n" +
@@ -31,6 +41,9 @@ public class MobiBannerView extends FrameLayout {
             "</div>";
 
     private WebView mWebView;
+    private MobiCallback.BannerAdLoadCallback mCallback;
+    private MobiBannerAd.AdListener mListener;
+    private MobiBannerAdImpl mMobiBannerAd;
 
     public MobiBannerView(@NonNull Context context) {
         this(context, null);
@@ -54,10 +67,53 @@ public class MobiBannerView extends FrameLayout {
         mWebView.getSettings().setDefaultTextEncodingName("UTF-8");
         mWebView.getSettings().setLoadWithOverviewMode(true);
 //        mMobiWebView.loadDataWithBaseURL(null, webData, "text/html", "utf-8", null);
+
+        mWebView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMobiBannerAd != null) {
+                    AdBean adData = mMobiBannerAd.getAdData();
+                    if (adData != null) {
+                        List<String> clkTrack = adData.getClkTrack();
+                    }
+                }
+                if (mListener != null) {
+                    mListener.onAdShow(MobiBannerView.this, 0);
+                }
+            }
+        });
     }
 
-    public void load() {
-
+    public void setAdLoadCallback(MobiCallback.BannerAdLoadCallback callback) {
+        mCallback = callback;
     }
 
+    public void setAdBannerListener(MobiBannerAd.AdListener listener) {
+        mListener = listener;
+    }
+
+    public void render() {
+        String decodeAdHtml = null;
+        if (mMobiBannerAd.getAdData() != null) {
+            if (mMobiBannerAd.getAdData().getStyle() == 2) {
+                String ad = mMobiBannerAd.getAdData().getAd();
+                decodeAdHtml = Base64Utils.decodeToString(ad);
+                Log.e(TAG, "decodeAdHtml : " + decodeAdHtml);
+            }
+        }
+        if (TextUtils.isEmpty(decodeAdHtml)) {
+            //不正常显示内容
+
+        } else {
+            mWebView.loadDataWithBaseURL(null, decodeAdHtml, "text/html", "utf-8", null);
+        }
+
+        if (mListener != null) {
+            mListener.onAdShow(this, 0);
+        }
+    }
+
+    public void setMobiBannerAd(MobiBannerAdImpl mobiBannerAd) {
+        mMobiBannerAd = mobiBannerAd;
+    }
 }

@@ -7,8 +7,15 @@ import android.util.Log;
 import com.mobi.overseasad.BuildConfig;
 import com.mobi.sdk.overseasad.MobiConstantValue;
 import com.mobi.sdk.overseasad.OverseasAdSession;
+import com.mobi.sdk.overseasad.bean.AdBean;
+import com.mobi.sdk.overseasad.bean.AdBeanUtil;
+import com.mobi.sdk.overseasad.bean.JsonUtil;
 import com.mobi.sdk.overseasad.utils.DeviceUtil;
 import com.mobi.sdk.overseasad.utils.NetUtil;
+
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * @author zhousaito
@@ -19,23 +26,35 @@ import com.mobi.sdk.overseasad.utils.NetUtil;
 public class NetworkClient {
     public static final String TAG = "NetworkControl";
 
-    public void requestBannerAd(final String posid, RequestCallback callback) {
+    public void requestBannerAd(final String posid, final RequestCallback<List<AdBean>> callback) {
         OverseasAdSession.get().getDispatcher().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    HttpClient httpClient = new HttpClient();
+
                     String requestUrl = getRequestUrl(MobiConstantValue.LOCAL_URL, posid);
                     Request request = new Request.Builder()
                             .setMethod(Request.GET)
                             .setUrl(requestUrl)
                             .build();
 
-                    Response response = httpClient.execute(request);
-                    if (response.getCode() == 200) {
-                        String resContent = response.body();
-                        Log.e(TAG, "resContent: " + resContent);
-                    }
+                    requestAd(request, new RequestCallback<JSONObject>() {
+                        @Override
+                        public void onSuccess(JSONObject data) {
+                            List<AdBean> ads = AdBeanUtil.parseData(data.optJSONArray("ads"));
+                            if (callback != null) {
+                                callback.onSuccess(ads);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int code, String message) {
+                            if (callback != null) {
+                                callback.onFailure(code, message);
+                            }
+                        }
+                    });
+
                 } finally {
                     OverseasAdSession.get().getDispatcher().finishRunnable(this);
                 }
@@ -43,8 +62,31 @@ public class NetworkClient {
         });
     }
 
-    public void requestAd(Request request, RequestCallback callback) {
-
+    public void requestAd(Request request, RequestCallback<JSONObject> callback) {
+        HttpClient httpClient = new HttpClient();
+        Response response = httpClient.execute(request);
+        if (response.getCode() == 200) {
+            String resContent = response.body();
+            Log.e(TAG, "resContent: " + resContent);
+            JSONObject jsonObject = JsonUtil.string2JSONObject(resContent);
+            int code = -100;
+            String msg = "";
+            if (jsonObject != null) {
+                code = jsonObject.optInt("code");
+                msg = jsonObject.optString("msg");
+                if (code == 0) {
+                    if (callback != null) {
+                        callback.onSuccess(jsonObject);
+                    }
+                    //解析成功就返回
+                    return;
+                }
+            }
+            //code非0就属于报错
+            if (callback != null) {
+                callback.onFailure(code, msg);
+            }
+        }
     }
 
     /**
@@ -113,7 +155,7 @@ public class NetworkClient {
 
 
     public interface RequestCallback<T> {
-        void onSuccess(T configBean);
+        void onSuccess(T data);
 
         void onFailure(int code, String message);
     }

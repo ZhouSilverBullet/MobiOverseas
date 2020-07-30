@@ -3,10 +3,11 @@ package com.mobi.sdk.overseasad;
 import android.content.Context;
 
 import com.mobi.sdk.overseasad.banner.MobiBannerAdImpl;
-import com.mobi.sdk.overseasad.listener.MobiBannerAd;
+import com.mobi.sdk.overseasad.bean.AdBean;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
-import com.mobi.sdk.overseasad.network.HttpClient;
 import com.mobi.sdk.overseasad.network.NetworkClient;
+
+import java.util.List;
 
 /**
  * @author zhousaito
@@ -17,6 +18,7 @@ import com.mobi.sdk.overseasad.network.NetworkClient;
 public class MobiLoaderImpl implements MobiAdLoader {
     private final NetworkClient mNetworkClient;
     private Context mContext;
+    private MobiBannerAdImpl mMobiBannerAd;
 
     public MobiLoaderImpl(Context context) {
         mContext = context.getApplicationContext();
@@ -24,19 +26,42 @@ public class MobiLoaderImpl implements MobiAdLoader {
     }
 
     @Override
-    public void loadBannerAd(MobiAdRequest request, MobiCallback.BannerAdLoadCallback callback) {
-        MobiBannerAdImpl mobiBannerAd = new MobiBannerAdImpl(mContext);
-        mobiBannerAd.setAdLoaderCallback(callback);
+    public void loadBannerAd(MobiAdRequest request, final MobiCallback.BannerAdLoadCallback callback) {
+        mMobiBannerAd = new MobiBannerAdImpl(mContext);
+        mMobiBannerAd.setAdLoadCallback(callback);
 
-        mNetworkClient.requestBannerAd(request.getPosid(), new NetworkClient.RequestCallback() {
+        mNetworkClient.requestBannerAd(request.getPosid(), new NetworkClient.RequestCallback<List<AdBean>>() {
             @Override
-            public void onSuccess(Object configBean) {
+            public void onSuccess(final List<AdBean> data) {
+                if (mMobiBannerAd != null) {
+                    for (AdBean datum : data) {
+                        if (datum.getStyle() == 2) {
+                            mMobiBannerAd.setAdData(datum);
+                        }
+                    }
 
+                    OverseasAdSession.get().runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mMobiBannerAd.getAdData() == null) {
+                                if (callback != null) {
+                                    callback.onError(10001, "获取数据为空");
+                                }
+                            } else {
+                                if (callback != null) {
+                                    callback.onBannerAdLoad(mMobiBannerAd);
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
             @Override
             public void onFailure(int code, String message) {
-
+                if (callback != null) {
+                    callback.onError(code, message);
+                }
             }
         });
     }

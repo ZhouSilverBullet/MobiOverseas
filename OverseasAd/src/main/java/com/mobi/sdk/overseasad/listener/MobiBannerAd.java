@@ -2,8 +2,6 @@ package com.mobi.sdk.overseasad.listener;
 
 import android.view.View;
 
-import com.mobi.sdk.overseasad.MobiAdRequest;
-
 /**
  * @author zhousaito
  * @version 1.0
@@ -11,6 +9,17 @@ import com.mobi.sdk.overseasad.MobiAdRequest;
  * @Dec 略
  */
 public interface MobiBannerAd {
+
+    /**
+     * 获取BannerView进行展示
+     *
+     * @return
+     */
+    View getBannerView();
+
+    void setAdBannerListener(AdListener listener);
+
+    void render();
 
     /**
      * 展示的时候的接口
