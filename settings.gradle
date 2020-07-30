@@ -1,0 +1,3 @@
+include ':OverseasAd'
+include ':app'
+rootProject.name = "MobiOverseas"
