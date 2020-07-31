@@ -22,6 +22,12 @@ public class MobiBannerAdImpl implements MobiBannerAd {
     private AdBean mAdData;
     private AdListener mListener;
 
+    /**
+     * 用于一次广告上传一次
+     */
+    private boolean mClickFinish;
+    private boolean mShowFinish;
+
     public MobiBannerAdImpl(Context context) {
         mContext = context.getApplicationContext();
     }
@@ -61,7 +67,12 @@ public class MobiBannerAdImpl implements MobiBannerAd {
      * 点击上报
      */
     public void reportClick() {
+        if (mClickFinish) {
+            return;
+        }
+
         if (mAdData != null) {
+            mClickFinish = true;
             for (String s : mAdData.getClkTrack()) {
                 NetworkClient.reportAd(s);
             }
@@ -72,7 +83,11 @@ public class MobiBannerAdImpl implements MobiBannerAd {
      * 展示上报
      */
     public void reportShow() {
+        if (mShowFinish) {
+            return;
+        }
         if (mAdData != null) {
+            mShowFinish = true;
             for (String s : mAdData.getImgTrack()) {
                 NetworkClient.reportAd(s);
             }

@@ -47,7 +47,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
                             mMobiBannerAd.createBannerView();
                             if (mMobiBannerAd.getAdData() == null) {
                                 if (callback != null) {
-                                    callback.onError(10001, "获取数据为空");
+                                    callback.onError(10001, "data is empty");
                                 }
                             } else {
                                 if (callback != null) {

@@ -23,8 +23,8 @@ public class AdBeanUtil {
             JSONObject adJsonObject = jsonArray.optJSONObject(i);
             JSONObject tactJsonObject = adJsonObject.optJSONObject("tact");
             TactBean bean = getTactBean(tactJsonObject);
-            List<String> imgTrack = getListString(adJsonObject.optJSONArray("img_track"));
-            List<String> clkTrack = getListString(adJsonObject.optJSONArray("clk_track"));
+            List<String> imgTrack = getListString(adJsonObject.optJSONArray("img_tack"));
+            List<String> clkTrack = getListString(adJsonObject.optJSONArray("clk_tack"));
 
             list.add(new AdBean(adJsonObject.optInt("style"),
                     adJsonObject.optInt("width"),

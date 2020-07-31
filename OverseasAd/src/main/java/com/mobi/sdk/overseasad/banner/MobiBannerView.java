@@ -1,6 +1,5 @@
 package com.mobi.sdk.overseasad.banner;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,7 +17,6 @@ import androidx.annotation.Nullable;
 
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
-import com.mobi.sdk.overseasad.network.HttpClient;
 import com.mobi.sdk.overseasad.utils.Base64Utils;
 import com.mobi.sdk.overseasad.utils.ResourceUtil;
 import com.mobi.sdk.overseasad.webview.BannerWebView;
@@ -151,6 +149,9 @@ public class MobiBannerView extends FrameLayout implements WebViewCallBack {
             context.startActivity(intent);
         } catch (Exception e) {
             Log.e(TAG, "跳转失败");
+            if (mCallback != null) {
+                mCallback.onError(10003, "skip error");
+            }
         }
     }
 
