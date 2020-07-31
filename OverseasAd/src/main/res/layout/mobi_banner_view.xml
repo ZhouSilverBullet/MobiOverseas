@@ -7,5 +7,5 @@
     <com.mobi.sdk.overseasad.webview.BannerWebView
         android:id="@+id/mobiWebView"
         android:layout_width="match_parent"
-        android:layout_height="80dp" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

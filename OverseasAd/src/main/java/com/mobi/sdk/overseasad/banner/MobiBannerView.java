@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
@@ -37,6 +39,10 @@ public class MobiBannerView extends FrameLayout implements WebViewCallBack {
     private MobiBannerAd.AdListener mListener;
     private MobiBannerAdImpl mMobiBannerAd;
 
+    //服务端给的宽和高
+    private int mBackEndWidth;
+    private int mBackEndHeight;
+
     public MobiBannerView(@NonNull Context context) {
         this(context, null);
     }
@@ -47,34 +53,8 @@ public class MobiBannerView extends FrameLayout implements WebViewCallBack {
 
     public MobiBannerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        init();
     }
 
-    private void init() {
-        LayoutInflater.from(getContext())
-                .inflate(ResourceUtil.getIdentifierLayout("mobi_banner_view"), this);
-
-        mWebView = findViewById(ResourceUtil.getIdentifierId("mobiWebView"));
-        mWebView.registerWebViewCallBack(this);
-//        mMobiWebView.loadDataWithBaseURL(null, webData, "text/html", "utf-8", null);
-
-//        mWebView.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mMobiBannerAd != null) {
-//                    AdBean adData = mMobiBannerAd.getAdData();
-//                    if (adData != null) {
-//                        List<String> clkTrack = adData.getClkTrack();
-//                    }
-//                }
-//                if (mListener != null) {
-//                    mListener.onAdShow(MobiBannerView.this, 0);
-//                }
-//            }
-//        });
-
-    }
 
     public void setAdLoadCallback(MobiCallback.BannerAdLoadCallback callback) {
         mCallback = callback;
@@ -103,6 +83,12 @@ public class MobiBannerView extends FrameLayout implements WebViewCallBack {
         if (mListener != null) {
             mListener.onAdShow(this, 0);
         }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        Log.e(TAG, getMeasuredWidth() + ", " + getMeasuredHeight());
     }
 
     public void setMobiBannerAd(MobiBannerAdImpl mobiBannerAd) {
@@ -176,4 +162,22 @@ public class MobiBannerView extends FrameLayout implements WebViewCallBack {
         }
     }
 
+    public void setBackEndSize(int width, int height) {
+        View view = LayoutInflater.from(getContext())
+                .inflate(ResourceUtil.getIdentifierLayout("mobi_banner_view"), null);
+        if (width == 0 || height == 0) {
+            addView(view);
+        } else {
+            int widthPixels = getResources().getDisplayMetrics().widthPixels;
+            float ratio = width / (widthPixels * 1f);
+
+            this.mBackEndWidth = widthPixels;
+            this.mBackEndHeight = (int) (height / ratio);
+            ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(mBackEndWidth, mBackEndHeight);
+            addView(view, lp);
+        }
+
+        mWebView = findViewById(ResourceUtil.getIdentifierId("mobiWebView"));
+        mWebView.registerWebViewCallBack(this);
+    }
 }

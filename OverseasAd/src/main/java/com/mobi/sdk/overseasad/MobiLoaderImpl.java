@@ -44,6 +44,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
                     OverseasAdSession.get().runUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mMobiBannerAd.createBannerView();
                             if (mMobiBannerAd.getAdData() == null) {
                                 if (callback != null) {
                                     callback.onError(10001, "获取数据为空");

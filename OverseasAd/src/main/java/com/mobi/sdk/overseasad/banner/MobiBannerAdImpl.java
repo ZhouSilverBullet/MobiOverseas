@@ -16,7 +16,7 @@ import com.mobi.sdk.overseasad.network.NetworkClient;
  */
 public class MobiBannerAdImpl implements MobiBannerAd {
 
-    private final MobiBannerView mBannerView;
+    private MobiBannerView mBannerView;
     private Context mContext;
     private MobiCallback.BannerAdLoadCallback mCallback;
     private AdBean mAdData;
@@ -24,13 +24,10 @@ public class MobiBannerAdImpl implements MobiBannerAd {
 
     public MobiBannerAdImpl(Context context) {
         mContext = context.getApplicationContext();
-        mBannerView = new MobiBannerView(context);
-        mBannerView.setMobiBannerAd(this);
     }
 
     public void setAdLoadCallback(MobiCallback.BannerAdLoadCallback callback) {
         mCallback = callback;
-        mBannerView.setAdLoadCallback(callback);
     }
 
     public void setAdData(AdBean adData) {
@@ -80,5 +77,16 @@ public class MobiBannerAdImpl implements MobiBannerAd {
                 NetworkClient.reportAd(s);
             }
         }
+    }
+
+    public void createBannerView() {
+        mBannerView = new MobiBannerView(mContext);
+        if (mAdData != null && mAdData.getWidth() > 0 && mAdData.getHeight() > 0) {
+            mBannerView.setBackEndSize(mAdData.getWidth(), mAdData.getHeight());
+        } else {
+            mBannerView.setBackEndSize(0, 0);
+        }
+        mBannerView.setAdLoadCallback(mCallback);
+        mBannerView.setMobiBannerAd(this);
     }
 }
