@@ -19,10 +19,16 @@ public class MobiLoaderImpl implements MobiAdLoader {
     private final NetworkClient mNetworkClient;
     private Context mContext;
     private MobiBannerAdImpl mMobiBannerAd;
+    private boolean mIsXmlCreate;
 
     public MobiLoaderImpl(Context context) {
+        this(context, false);
+    }
+
+    public MobiLoaderImpl(Context context, boolean isXmlCreate) {
         mContext = context.getApplicationContext();
         mNetworkClient = new NetworkClient();
+        mIsXmlCreate = isXmlCreate;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
                     OverseasAdSession.get().runUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mMobiBannerAd.createBannerView();
+                            mMobiBannerAd.createBannerView(mIsXmlCreate);
                             if (mMobiBannerAd.getAdData() == null) {
                                 if (callback != null) {
                                     callback.onBannerFailed(10001, "data is empty");

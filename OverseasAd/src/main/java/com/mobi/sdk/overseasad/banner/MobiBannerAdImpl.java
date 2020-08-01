@@ -94,13 +94,14 @@ public class MobiBannerAdImpl implements MobiBannerAd {
         }
     }
 
-    public void createBannerView() {
+    public void createBannerView(boolean isXml) {
         mBannerView = new MobiBannerInnerView(mContext);
         if (mAdData != null && mAdData.getWidth() > 0 && mAdData.getHeight() > 0) {
             mBannerView.setBackEndSize(mAdData.getWidth(), mAdData.getHeight());
         } else {
             mBannerView.setBackEndSize(0, 0);
         }
+        mBannerView.setIsXmlCreate(isXml);
         mBannerView.setAdLoadCallback(mCallback);
         mBannerView.setMobiBannerAd(this);
     }

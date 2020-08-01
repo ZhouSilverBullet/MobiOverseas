@@ -147,7 +147,7 @@ public class NetworkClient {
         sb.append("&res=").append(DeviceUtil.getScreenWidth(context)).append("*").append(DeviceUtil.getScreenHeight(context));
         sb.append("&hw=").append("");
         //请求超时是多少毫秒
-        sb.append("tmax=").append(500);
+        sb.append("&tmax=").append(500);
         sb.append("&us_privacy=").append("");
 
         return sb.toString();

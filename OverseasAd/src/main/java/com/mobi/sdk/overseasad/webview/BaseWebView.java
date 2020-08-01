@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.webkit.WebView;
 
 import com.mobi.sdk.overseasad.webview.settings.WebviewDefaultSetting;
+import com.mobi.sdk.overseasad.webview.webviewclient.MobFinishCallback;
 import com.mobi.sdk.overseasad.webview.webviewclient.MobiWebviewClient;
 import com.mobi.sdk.overseasad.webview.webviewclient.WebViewCallBack;
 
@@ -57,6 +58,14 @@ public class BaseWebView extends WebView implements MobiWebviewClient.WebviewTou
             mClient.setWebViewCallBack(webViewCallBack);
         }
     }
+
+    public void setMobFinishCallback(MobFinishCallback mobFinishCallback) {
+        if (mClient != null) {
+            mClient.setMobFinishCallback(mobFinishCallback);
+        }
+    }
+
+
 
     @Override
     public void loadUrl(String url) {

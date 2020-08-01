@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.mobi.sdk.overseasad.MobiAdLoader;
 import com.mobi.sdk.overseasad.MobiAdRequest;
 import com.mobi.sdk.overseasad.MobiError;
-import com.mobi.sdk.overseasad.MobiSdk;
+import com.mobi.sdk.overseasad.MobiLoaderImpl;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
 
@@ -107,7 +107,7 @@ public class MobiBannerView extends FrameLayout {
      * @param mobiAdRequest
      */
     public void load(MobiAdRequest mobiAdRequest) {
-        MobiAdLoader adLoader = MobiSdk.createBanner(getContext());
+        MobiAdLoader adLoader = new MobiLoaderImpl(getContext(), true);
         adLoader.loadBannerAd(mobiAdRequest, new MobiCallback.BannerAdLoadCallback() {
             @Override
             public void onBannerLoaded(MobiBannerAd bannerAd) {

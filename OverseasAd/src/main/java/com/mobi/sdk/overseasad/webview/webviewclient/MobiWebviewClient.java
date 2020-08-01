@@ -34,6 +34,7 @@ public class MobiWebviewClient extends WebViewClient {
     boolean isReady;
     private Map<String, String> mHeaders;
     private WebviewTouch mWebviewTouch;
+    private MobFinishCallback mMobFinishCallback;
 
     public MobiWebviewClient(WebView webView, Map<String, String> headers, WebviewTouch touch) {
         this.webView = webView;
@@ -53,6 +54,10 @@ public class MobiWebviewClient extends WebViewClient {
         this.webViewCallBack = webViewCallBack;
     }
 
+    public void setMobFinishCallback(MobFinishCallback mobFinishCallback) {
+        mMobFinishCallback = mobFinishCallback;
+    }
+
     /**
      * url重定向会执行此方法以及点击页面某些链接也会执行此方法
      *
@@ -62,6 +67,12 @@ public class MobiWebviewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Log.e(TAG, "shouldOverrideUrlLoading url: " + url);
         // 当前链接的重定向, 通过是否发生过点击行为来判断
+        if (!TextUtils.isEmpty(url) && url.startsWith("mob://finishLoad")) {
+            if (mMobFinishCallback != null) {
+                mMobFinishCallback.onFinish();
+            }
+            return true;
+        }
         if (!mWebviewTouch.isTouchByUser()) {
             return super.shouldOverrideUrlLoading(view, url);
         }
@@ -85,6 +96,12 @@ public class MobiWebviewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         Log.e(TAG, "shouldOverrideUrlLoading url: " + request.getUrl());
         // 当前链接的重定向
+        if (!TextUtils.isEmpty(request.getUrl().toString()) && request.getUrl().toString().startsWith("mob://finishLoad")) {
+            if (mMobFinishCallback != null) {
+                mMobFinishCallback.onFinish();
+            }
+            return true;
+        }
         if (!mWebviewTouch.isTouchByUser()) {
             return super.shouldOverrideUrlLoading(view, request);
         }

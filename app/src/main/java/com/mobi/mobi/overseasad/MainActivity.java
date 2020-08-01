@@ -58,32 +58,32 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        MobiAdRequest request = new MobiAdRequest.Builder().setPosid("168001").build();
+        MobiAdRequest request = new MobiAdRequest.Builder().setPosid("212001").build();
         bannerView.load(request);
 
-        MobiAdLoader adLoader = MobiSdk.createBanner(this);
-        adLoader.loadBannerAd(request, new MobiCallback.BannerAdLoadCallback() {
-            @Override
-            public void onBannerLoaded(MobiBannerAd bannerAd) {
-                bannerAd.setAdBannerListener(new MobiBannerAd.AdListener() {
-                    @Override
-                    public void onBannerClicked(View bannerView, int index) {
-
-                    }
-
-                    @Override
-                    public void onBannerExpanded(View bannerView, int index) {
-                        mFrameLayout.addView(bannerView);
-                    }
-                });
-
-                bannerAd.render();
-            }
-
-            @Override
-            public void onBannerFailed(int code, String message) {
-                Log.e(TAG, "code : " + code + ", message: " + message);
-            }
-        });
+//        MobiAdLoader adLoader = MobiSdk.createBanner(this);
+//        adLoader.loadBannerAd(request, new MobiCallback.BannerAdLoadCallback() {
+//            @Override
+//            public void onBannerLoaded(MobiBannerAd bannerAd) {
+//                bannerAd.setAdBannerListener(new MobiBannerAd.AdListener() {
+//                    @Override
+//                    public void onBannerClicked(View bannerView, int index) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onBannerExpanded(View bannerView, int index) {
+//                        mFrameLayout.addView(bannerView);
+//                    }
+//                });
+//
+//                bannerAd.render();
+//            }
+//
+//            @Override
+//            public void onBannerFailed(int code, String message) {
+//                Log.e(TAG, "code : " + code + ", message: " + message);
+//            }
+//        });
     }
 }

@@ -1,11 +1,6 @@
 package com.mobi.sdk.overseasad;
 
 import android.content.Context;
-import android.view.ViewGroup;
-
-import com.mobi.sdk.overseasad.banner.MobiBannerAdImpl;
-import com.mobi.sdk.overseasad.listener.MobiBannerAd;
-import com.mobi.sdk.overseasad.listener.MobiCallback;
 
 /**
  * @author zhousaito

@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
@@ -18,9 +16,11 @@ import androidx.annotation.Nullable;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
 import com.mobi.sdk.overseasad.utils.Base64Utils;
-import com.mobi.sdk.overseasad.utils.ResourceUtil;
 import com.mobi.sdk.overseasad.webview.BannerWebView;
+import com.mobi.sdk.overseasad.webview.webviewclient.MobFinishCallback;
 import com.mobi.sdk.overseasad.webview.webviewclient.WebViewCallBack;
+
+import java.util.List;
 
 /**
  * @author zhousaito
@@ -41,6 +41,9 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
     private int mBackEndWidth;
     private int mBackEndHeight;
 
+    //布局创建的
+    private boolean mIsXmlCreate;
+
     public MobiBannerInnerView(@NonNull Context context) {
         this(context, null);
     }
@@ -53,7 +56,6 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         super(context, attrs, defStyleAttr);
     }
 
-
     public void setAdLoadCallback(MobiCallback.BannerAdLoadCallback callback) {
         mCallback = callback;
     }
@@ -61,9 +63,6 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
     public void setAdBannerListener(MobiBannerAd.AdListener listener) {
         mListener = listener;
     }
-
-
-
 
     public void render() {
         String decodeAdHtml = null;
@@ -76,14 +75,13 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         }
         if (TextUtils.isEmpty(decodeAdHtml)) {
             //不正常显示内容
-
+            if (mCallback != null) {
+                mCallback.onBannerFailed(10003, "page is empty");
+            }
         } else {
             mWebView.loadDataWithBaseURL(null, decodeAdHtml, "text/html", "utf-8", null);
         }
 
-        if (mListener != null) {
-            mListener.onBannerExpanded(this, 0);
-        }
     }
 
     @Override
@@ -114,6 +112,54 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
     @Override
     public boolean overrideUrlLoading(WebView view, String url) {
         Log.e(TAG, " overrideUrlLoading ");
+        Uri uri = null;
+        try {
+            uri = Uri.parse(url);
+        } catch (Exception e) {
+        }
+
+        if (uri == null) {
+            return true;
+        }
+
+        if ("mopubnativebrowser".equalsIgnoreCase(uri.getScheme()) ||
+                "mobnativebrowser".equalsIgnoreCase(uri.getScheme())) {
+            if ("navigate".equals(uri.getHost())) {
+                String queryUrl = uri.getQueryParameter("url");
+                if (!TextUtils.isEmpty(queryUrl)) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(queryUrl));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getContext().startActivity(intent);
+                }
+            }
+            return true;
+        }
+
+        if ("deeplink+".equalsIgnoreCase(uri.getScheme())) {
+            String primaryUrl = null;
+            List<String> primaryTrackingUrls = null;
+            String fallbackUrl = null;
+            List<String> fallbackTrackingUrls = null;
+            try {
+                primaryUrl = uri.getQueryParameter("primaryUrl");
+                primaryTrackingUrls = uri.getQueryParameters("primaryTrackingUrl");
+                fallbackUrl = uri.getQueryParameter("fallbackUrl");
+                fallbackTrackingUrls = uri.getQueryParameters("fallbackTrackingUrl");
+            } catch (UnsupportedOperationException e) {
+            }
+
+            if (!TextUtils.isEmpty(primaryUrl)) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(primaryUrl));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getContext().startActivity(intent);
+                } catch (Exception e) {
+                }
+            }
+            return true;
+        }
+
+
         if (!TextUtils.isEmpty(url)) {
             if (url.startsWith("http")) {
                 Intent intent = new Intent();
@@ -166,11 +212,30 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         }
     }
 
+
     public void setBackEndSize(int width, int height) {
-        View view = LayoutInflater.from(getContext())
-                .inflate(ResourceUtil.getIdentifierLayout("mobi_banner_view"), null);
-        if (width == 0 || height == 0) {
-            addView(view);
+        final ViewGroup.LayoutParams lp = computeLp(width, height);
+        mWebView = new BannerWebView(getContext());
+        mWebView.registerWebViewCallBack(this);
+        mWebView.setMobFinishCallback(new MobFinishCallback() {
+            @Override
+            public void onFinish() {
+                if (mWebView.getParent() == null) {
+                    addView(mWebView);
+
+                    if (mListener != null) {
+                        mListener.onBannerExpanded(MobiBannerInnerView.this, 0);
+                    }
+                }
+            }
+        });
+    }
+
+    public ViewGroup.LayoutParams computeLp(int width, int height) {
+
+        if (mIsXmlCreate || width == 0 || height == 0) {
+//            addView(view);
+            return null;
         } else {
             int widthPixels = getResources().getDisplayMetrics().widthPixels;
             float ratio = width / (widthPixels * 1f);
@@ -178,10 +243,12 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
             this.mBackEndWidth = widthPixels;
             this.mBackEndHeight = (int) (height / ratio);
             ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(mBackEndWidth, mBackEndHeight);
-            addView(view, lp);
+//            addView(view, lp);
+            return lp;
         }
+    }
 
-        mWebView = findViewById(ResourceUtil.getIdentifierId("mobiWebView"));
-        mWebView.registerWebViewCallBack(this);
+    public void setIsXmlCreate(boolean isXml) {
+        mIsXmlCreate = isXml;
     }
 }
