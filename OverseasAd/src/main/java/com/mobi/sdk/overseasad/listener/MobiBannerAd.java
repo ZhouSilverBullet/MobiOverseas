@@ -25,8 +25,8 @@ public interface MobiBannerAd {
      * 展示的时候的接口
      */
     public interface AdListener {
-        void onAdClicked(View bannerView, int index);
+        void onBannerClicked(View bannerView, int index);
 
-        void onAdShow(View bannerView, int index);
+        void onBannerExpanded(View bannerView, int index);
     }
 }

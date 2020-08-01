@@ -16,7 +16,7 @@ import com.mobi.sdk.overseasad.network.NetworkClient;
  */
 public class MobiBannerAdImpl implements MobiBannerAd {
 
-    private MobiBannerView mBannerView;
+    private MobiBannerInnerView mBannerView;
     private Context mContext;
     private MobiCallback.BannerAdLoadCallback mCallback;
     private AdBean mAdData;
@@ -95,7 +95,7 @@ public class MobiBannerAdImpl implements MobiBannerAd {
     }
 
     public void createBannerView() {
-        mBannerView = new MobiBannerView(mContext);
+        mBannerView = new MobiBannerInnerView(mContext);
         if (mAdData != null && mAdData.getWidth() > 0 && mAdData.getHeight() > 0) {
             mBannerView.setBackEndSize(mAdData.getWidth(), mAdData.getHeight());
         } else {

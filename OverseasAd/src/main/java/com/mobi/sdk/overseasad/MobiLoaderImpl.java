@@ -47,11 +47,11 @@ public class MobiLoaderImpl implements MobiAdLoader {
                             mMobiBannerAd.createBannerView();
                             if (mMobiBannerAd.getAdData() == null) {
                                 if (callback != null) {
-                                    callback.onError(10001, "data is empty");
+                                    callback.onBannerFailed(10001, "data is empty");
                                 }
                             } else {
                                 if (callback != null) {
-                                    callback.onBannerAdLoad(mMobiBannerAd);
+                                    callback.onBannerLoaded(mMobiBannerAd);
                                 }
                             }
                         }
@@ -62,7 +62,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
             @Override
             public void onFailure(int code, String message) {
                 if (callback != null) {
-                    callback.onError(code, message);
+                    callback.onBannerFailed(code, message);
                 }
             }
         });

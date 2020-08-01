@@ -13,14 +13,14 @@ public interface MobiCallback {
          * 广告下载
          * @param bannerAd
          */
-        void onBannerAdLoad(MobiBannerAd bannerAd);
+        void onBannerLoaded(MobiBannerAd bannerAd);
 
         /**
          * 错误消息
          * @param code
          * @param message
          */
-        void onError(int code, String message);
+        void onBannerFailed(int code, String message);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.mobi.mobi.overseasad;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.widget.FrameLayout;
 
 import com.mobi.sdk.overseasad.MobiAdLoader;
 import com.mobi.sdk.overseasad.MobiAdRequest;
+import com.mobi.sdk.overseasad.MobiError;
 import com.mobi.sdk.overseasad.MobiSdk;
 import com.mobi.sdk.overseasad.banner.MobiBannerView;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
@@ -28,30 +30,58 @@ public class MainActivity extends AppCompatActivity {
 
         mFrameLayout = findViewById(R.id.flLayout);
 
-        MobiAdLoader adLoader = MobiSdk.createBanner(this);
+        MobiBannerView bannerView = findViewById(R.id.mobiBanner);
+        bannerView.setAdListener(new MobiBannerView.BannerAdListener() {
+
+            @Override
+            public void onBannerLoaded(@NonNull View banner) {
+
+            }
+
+            @Override
+            public void onBannerFailed(View banner, MobiError error) {
+
+            }
+
+            @Override
+            public void onBannerClicked(View banner) {
+
+            }
+
+            @Override
+            public void onBannerExpanded(View banner) {
+
+            }
+
+            @Override
+            public void onBannerCollapsed(View banner) {
+
+            }
+        });
         MobiAdRequest request = new MobiAdRequest.Builder().setPosid("168001").build();
+        bannerView.load(request);
+
+        MobiAdLoader adLoader = MobiSdk.createBanner(this);
         adLoader.loadBannerAd(request, new MobiCallback.BannerAdLoadCallback() {
             @Override
-            public void onBannerAdLoad(MobiBannerAd bannerAd) {
+            public void onBannerLoaded(MobiBannerAd bannerAd) {
                 bannerAd.setAdBannerListener(new MobiBannerAd.AdListener() {
                     @Override
-                    public void onAdClicked(View bannerView, int index) {
+                    public void onBannerClicked(View bannerView, int index) {
 
                     }
 
                     @Override
-                    public void onAdShow(View bannerView, int index) {
+                    public void onBannerExpanded(View bannerView, int index) {
                         mFrameLayout.addView(bannerView);
                     }
                 });
 
                 bannerAd.render();
-
-
             }
 
             @Override
-            public void onError(int code, String message) {
+            public void onBannerFailed(int code, String message) {
                 Log.e(TAG, "code : " + code + ", message: " + message);
             }
         });
