@@ -19,6 +19,15 @@ public class MobiSdk {
         OverseasAdSession.get().init(context.getApplicationContext(), appId);
     }
 
+    /**
+     * 初始化，传一些必要的参数
+     *
+     * @param context
+     */
+    public static void init(Context context) {
+        OverseasAdSession.get().init(context.getApplicationContext(), "");
+    }
+
     public static MobiAdLoader createBanner(Context context) {
         MobiAdLoader mobiLoader = new MobiLoaderImpl(context);
         return mobiLoader;

@@ -26,13 +26,13 @@ import java.util.List;
 public class NetworkClient {
     public static final String TAG = "NetworkControl";
 
-    public void requestBannerAd(final String posid, final RequestCallback<List<AdBean>> callback) {
+    public void requestBannerAd(final String posid,final Context context, final RequestCallback<List<AdBean>> callback) {
         OverseasAdSession.get().getDispatcher().execute(new Runnable() {
             @Override
             public void run() {
                 try {
 
-                    String requestUrl = getRequestUrl(MobiConstantValue.LOCAL_URL, posid);
+                    String requestUrl = getRequestUrl(context, MobiConstantValue.LOCAL_URL, posid);
                     Request request = new Request.Builder()
                             .setMethod(Request.GET)
                             .setUrl(requestUrl)
@@ -108,11 +108,10 @@ public class NetworkClient {
      * @param reqUrl
      * @return
      */
-    private static String getRequestUrl(String reqUrl, String posid) {
+    private static String getRequestUrl(Context context, String reqUrl, String posid) {
         if (TextUtils.isEmpty(reqUrl)) {
             return "";
         }
-        Context context = OverseasAdSession.get().getContext();
 
         String[] mccAndMnc = DeviceUtil.getMccAndMnc(context);
         String devicetype;

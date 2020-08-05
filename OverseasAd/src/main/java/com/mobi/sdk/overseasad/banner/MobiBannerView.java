@@ -12,6 +12,7 @@ import com.mobi.sdk.overseasad.MobiAdLoader;
 import com.mobi.sdk.overseasad.MobiAdRequest;
 import com.mobi.sdk.overseasad.MobiError;
 import com.mobi.sdk.overseasad.MobiLoaderImpl;
+import com.mobi.sdk.overseasad.OverseasAdSession;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
 
@@ -99,6 +100,8 @@ public class MobiBannerView extends FrameLayout {
 
     public MobiBannerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        //默认自己给本地进行初始化一下
+        OverseasAdSession.get().init(context.getApplicationContext(), "");
     }
 
     /**

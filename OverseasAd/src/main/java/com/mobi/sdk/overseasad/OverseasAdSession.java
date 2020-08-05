@@ -1,6 +1,7 @@
 package com.mobi.sdk.overseasad;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
@@ -53,13 +54,11 @@ public class OverseasAdSession implements OAIdSdk.ResultCallback, WeakHandler.IH
      * @param context
      */
     public void init(Context context, String appId) {
+        if (mContext != null) {
+            return;
+        }
         mContext = context;
         mAppId = appId;
-        mHandler = new WeakHandler(Looper.getMainLooper(), this);
-
-        mDispatcher = new Dispatcher();
-        GaidInit.inti(context);
-        OAIdSdk.init(context, this);
     }
 
     public void setGaid(String gaid) {
@@ -93,10 +92,16 @@ public class OverseasAdSession implements OAIdSdk.ResultCallback, WeakHandler.IH
     }
 
     public Dispatcher getDispatcher() {
+        if (mDispatcher == null) {
+            mDispatcher = new Dispatcher();
+        }
         return mDispatcher;
     }
 
     public void runUiThread(Runnable runnable) {
+        if (mHandler == null) {
+            mHandler = new WeakHandler(Looper.getMainLooper(), this);
+        }
         mHandler.post(runnable);
     }
 }

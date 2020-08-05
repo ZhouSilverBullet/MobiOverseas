@@ -25,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MobiSdk.init(this, "afdafdas");
         setContentView(R.layout.activity_main);
+
+//        MobiSdk.init(this);
 
         mFrameLayout = findViewById(R.id.flLayout);
 

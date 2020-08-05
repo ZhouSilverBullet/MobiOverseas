@@ -13,9 +13,12 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mobi.sdk.overseasad.OverseasAdSession;
 import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
 import com.mobi.sdk.overseasad.utils.Base64Utils;
+import com.mobi.sdk.overseasad.utils.GaidInit;
+import com.mobi.sdk.overseasad.utils.OAIdSdk;
 import com.mobi.sdk.overseasad.webview.BannerWebView;
 import com.mobi.sdk.overseasad.webview.handler.UrlAction;
 import com.mobi.sdk.overseasad.webview.webviewclient.MobFinishCallback;
@@ -55,6 +58,16 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
 
     public MobiBannerInnerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        OverseasAdSession.get().init(context, "");
+        if (TextUtils.isEmpty(OverseasAdSession.get().getGaid())) {
+            GaidInit.inti(context);
+        }
+
+        if (TextUtils.isEmpty(OverseasAdSession.get().getOaid())) {
+            OAIdSdk.init(context, OverseasAdSession.get());
+        }
+
     }
 
     public void setAdLoadCallback(MobiCallback.BannerAdLoadCallback callback) {

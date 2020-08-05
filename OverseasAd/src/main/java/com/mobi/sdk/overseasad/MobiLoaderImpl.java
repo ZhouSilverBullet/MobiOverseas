@@ -29,6 +29,9 @@ public class MobiLoaderImpl implements MobiAdLoader {
         mContext = context.getApplicationContext();
         mNetworkClient = new NetworkClient();
         mIsXmlCreate = isXmlCreate;
+
+        //初始化一次自己
+        MobiSdk.init(mContext);
     }
 
     @Override
@@ -36,7 +39,7 @@ public class MobiLoaderImpl implements MobiAdLoader {
         mMobiBannerAd = new MobiBannerAdImpl(mContext);
         mMobiBannerAd.setAdLoadCallback(callback);
 
-        mNetworkClient.requestBannerAd(request.getPosid(), new NetworkClient.RequestCallback<List<AdBean>>() {
+        mNetworkClient.requestBannerAd(request.getPosid(), mContext, new NetworkClient.RequestCallback<List<AdBean>>() {
             @Override
             public void onSuccess(final List<AdBean> data) {
                 if (mMobiBannerAd != null) {
