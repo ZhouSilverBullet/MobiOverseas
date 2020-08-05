@@ -17,6 +17,7 @@ import com.mobi.sdk.overseasad.listener.MobiBannerAd;
 import com.mobi.sdk.overseasad.listener.MobiCallback;
 import com.mobi.sdk.overseasad.utils.Base64Utils;
 import com.mobi.sdk.overseasad.webview.BannerWebView;
+import com.mobi.sdk.overseasad.webview.handler.UrlAction;
 import com.mobi.sdk.overseasad.webview.webviewclient.MobFinishCallback;
 import com.mobi.sdk.overseasad.webview.webviewclient.WebViewCallBack;
 
@@ -103,10 +104,7 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
     public void pageFinished(String url) {
         Log.e(TAG, " pageFinished ");
 
-        //网页加载完成，上报show事件
-        if (mMobiBannerAd != null) {
-            mMobiBannerAd.reportShow();
-        }
+
     }
 
     @Override
@@ -122,43 +120,15 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
             return true;
         }
 
-        if ("mopubnativebrowser".equalsIgnoreCase(uri.getScheme()) ||
-                "mobnativebrowser".equalsIgnoreCase(uri.getScheme())) {
-            if ("navigate".equals(uri.getHost())) {
-                String queryUrl = uri.getQueryParameter("url");
-                if (!TextUtils.isEmpty(queryUrl)) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(queryUrl));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getContext().startActivity(intent);
-                }
-            }
+        if (UrlAction.FOLLOW_DEEP_LINK_WITH_FALLBACK.shouldTryHandlingUrl(uri)) {
+            UrlAction.FOLLOW_DEEP_LINK_WITH_FALLBACK.handleUrl(getContext(), uri);
             return true;
         }
 
-        if ("deeplink+".equalsIgnoreCase(uri.getScheme())) {
-            String primaryUrl = null;
-            List<String> primaryTrackingUrls = null;
-            String fallbackUrl = null;
-            List<String> fallbackTrackingUrls = null;
-            try {
-                primaryUrl = uri.getQueryParameter("primaryUrl");
-                primaryTrackingUrls = uri.getQueryParameters("primaryTrackingUrl");
-                fallbackUrl = uri.getQueryParameter("fallbackUrl");
-                fallbackTrackingUrls = uri.getQueryParameters("fallbackTrackingUrl");
-            } catch (UnsupportedOperationException e) {
-            }
-
-            if (!TextUtils.isEmpty(primaryUrl)) {
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(primaryUrl));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getContext().startActivity(intent);
-                } catch (Exception e) {
-                }
-            }
+        if (UrlAction.NATIVE_BROWSER.shouldTryHandlingUrl(uri)) {
+            UrlAction.NATIVE_BROWSER.handleUrl(getContext(), uri);
             return true;
         }
-
 
         if (!TextUtils.isEmpty(url)) {
             if (url.startsWith("http")) {
@@ -222,6 +192,11 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
             public void onFinish() {
                 if (mWebView.getParent() == null) {
                     addView(mWebView);
+
+                    //网页加载完成，上报show事件
+                    if (mMobiBannerAd != null) {
+                        mMobiBannerAd.reportShow();
+                    }
 
                     if (mListener != null) {
                         mListener.onBannerExpanded(MobiBannerInnerView.this, 0);
