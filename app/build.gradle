@@ -20,10 +20,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    allprojects {
+        repositories {
+            flatDir { dirs 'libs' }
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+//    implementation files('libs/mobi_overseas_ad_sdk.aar')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation project(path: ':OverseasAd')

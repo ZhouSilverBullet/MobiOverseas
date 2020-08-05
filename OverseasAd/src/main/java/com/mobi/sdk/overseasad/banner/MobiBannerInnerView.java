@@ -95,7 +95,11 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         } else {
             mWebView.loadDataWithBaseURL(null, decodeAdHtml, "text/html", "utf-8", null);
         }
+        addView(mWebView);
 
+        if (mListener != null) {
+            mListener.onBannerExpanded(MobiBannerInnerView.this, 0);
+        }
     }
 
     @Override
@@ -195,6 +199,7 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         }
     }
 
+    private boolean isReportShow = false;
 
     public void setBackEndSize(int width, int height) {
         final ViewGroup.LayoutParams lp = computeLp(width, height);
@@ -203,16 +208,11 @@ public class MobiBannerInnerView extends FrameLayout implements WebViewCallBack 
         mWebView.setMobFinishCallback(new MobFinishCallback() {
             @Override
             public void onFinish() {
-                if (mWebView.getParent() == null) {
-                    addView(mWebView);
-
+                if (!isReportShow) {
+                    isReportShow = true;
                     //网页加载完成，上报show事件
                     if (mMobiBannerAd != null) {
                         mMobiBannerAd.reportShow();
-                    }
-
-                    if (mListener != null) {
-                        mListener.onBannerExpanded(MobiBannerInnerView.this, 0);
                     }
                 }
             }

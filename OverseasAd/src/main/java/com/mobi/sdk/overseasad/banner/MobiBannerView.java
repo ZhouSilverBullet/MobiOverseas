@@ -127,10 +127,12 @@ public class MobiBannerView extends FrameLayout {
 
                     @Override
                     public void onBannerExpanded(View bannerView, int index) {
+
+                        addView(bannerView);
+
                         if (mBannerAdListener != null) {
                             mBannerAdListener.onBannerExpanded(bannerView);
                         }
-                        addView(bannerView);
                     }
                 });
                 bannerAd.render();
